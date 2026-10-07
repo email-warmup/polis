@@ -10,6 +10,8 @@
    - `mongodb`, `redis`, `@aws-sdk/*` — в `src/db/db.ts` импортируются динамически, только для движков `mongo`, `redis` и `dynamodb`.
    Чтобы использовать другой движок, установите соответствующий драйвер рядом с пакетом.
 
+3. **Исправлена ошибка:** `close()` у in-memory БД (`src/db/mem.ts`) был no-op и не останавливал таймер очистки TTL. Процесс с jackson на движке `mem` (например, Jest) не завершался.
+
 ## Проверка
 
 ```bash
@@ -17,7 +19,7 @@ cd npm && npm install && npm run build
 POLIS_NO_ANALYTICS=1 npx tap --disable-coverage test/sso/*.test.ts test/identity-federation/*.test.ts test/sso-traces/*.test.ts test/dsync/*.test.ts test/event/*.test.ts
 ```
 
-Результат на `26.2.0-cw.2`: 818/818. `test/setup-link.test.ts` падает и в исходном `v26.2.0` (проблема upstream, не связана с форком).
+Результат на `26.2.0-cw.3`: 818/818. `test/setup-link.test.ts` падает и в исходном `v26.2.0` (проблема upstream, не связана с форком).
 
 ## Выпуск версии
 

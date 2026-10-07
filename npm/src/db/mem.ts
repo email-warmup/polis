@@ -10,6 +10,7 @@ class Mem implements DatabaseDriver {
   private cleanup: any;
   private ttlStore: any;
   private ttlCleanup: any;
+  private closed = false;
   private timerId: any;
 
   constructor(options: DatabaseOption) {
@@ -31,7 +32,7 @@ class Mem implements DatabaseDriver {
           }
         }
 
-        if (this.options.ttl) {
+        if (this.options.ttl && !this.closed) {
           this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
         }
       };
@@ -209,7 +210,12 @@ class Mem implements DatabaseDriver {
   }
 
   async close(): Promise<void> {
-    // no-op
+    // core-warmup: останавливаем таймер очистки TTL, иначе процесс (тесты) не завершается
+    this.closed = true;
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = undefined;
+    }
   }
 
   getStats(): Record<string, number> {
