@@ -17,14 +17,14 @@ cd npm && npm install && npm run build
 POLIS_NO_ANALYTICS=1 npx tap --disable-coverage test/sso/*.test.ts test/identity-federation/*.test.ts test/sso-traces/*.test.ts test/dsync/*.test.ts test/event/*.test.ts
 ```
 
-Результат на `26.2.0-cw.1`: 818/818. `test/setup-link.test.ts` падает и в исходном `v26.2.0` (проблема upstream, не связана с форком).
+Результат на `26.2.0-cw.2`: 818/818. `test/setup-link.test.ts` падает и в исходном `v26.2.0` (проблема upstream, не связана с форком).
 
 ## Выпуск версии
 
 ```bash
 cd npm
-# поднять "version" в package.json: 26.2.0-cw.N
-npm install && npm run build && npm pack
+npm pkg set version=26.2.0-cw.N
+./pack-core-warmup.sh ..   # сборка + main/types → dist (как в upstream-публикации)
 gh release create v26.2.0-cw.N boxyhq-saml-jackson-26.2.0-cw.N.tgz -R email-warmup/polis --target core-warmup
 ```
 
