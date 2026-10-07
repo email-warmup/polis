@@ -58,6 +58,8 @@ class DB implements DatabaseDriver {
     this.logger = logger;
 
     this.statsIntervalId = setInterval(async () => this.publishStats(), STATS_INTERVAL);
+    // core-warmup: фоновый таймер статистики не удерживает процесс
+    this.statsIntervalId.unref?.();
   }
 
   async get(namespace: string, key: string): Promise<unknown> {

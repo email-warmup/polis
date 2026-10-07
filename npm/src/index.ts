@@ -207,6 +207,7 @@ export const controllers = async (
     },
     productController,
     close: async () => {
+      ssoTraces.close();
       await db.close();
     },
   };

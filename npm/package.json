@@ -1,6 +1,6 @@
 {
   "name": "@boxyhq/saml-jackson",
-  "version": "26.2.0-cw.3",
+  "version": "26.2.0-cw.4",
   "description": "Polis library",
   "keywords": [
     "SAML 2.0"

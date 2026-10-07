@@ -12,6 +12,7 @@ const SSO_TRACES_REDACT_KEYS = ['profile', 'oidcTokenSet', 'samlResponse'];
 class SSOTraces {
   tracesStore: Storable;
   opts: JacksonOptionWithRequiredLogger;
+  private intervalId?: NodeJS.Timeout;
 
   constructor({ tracesStore, opts }) {
     this.tracesStore = tracesStore;
@@ -19,9 +20,18 @@ class SSOTraces {
     // Clean up stale traces at the start
     this.cleanUpStaleTraces();
     // Set timer to run every day
-    setInterval(async () => {
+    // core-warmup: unref — фоновый таймер не должен удерживать процесс; close() его останавливает
+    this.intervalId = setInterval(async () => {
       this.cleanUpStaleTraces();
     }, INTERVAL_1_DAY_MS);
+    this.intervalId.unref?.();
+  }
+
+  public close() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = undefined;
+    }
   }
 
   public async saveTrace(payload: SSOTrace) {

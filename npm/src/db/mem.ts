@@ -34,10 +34,12 @@ class Mem implements DatabaseDriver {
 
         if (this.options.ttl && !this.closed) {
           this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+          this.timerId.unref?.();
         }
       };
 
       this.timerId = setTimeout(this.ttlCleanup, this.options.ttl * 1000);
+      this.timerId.unref?.();
     }
 
     return this;
