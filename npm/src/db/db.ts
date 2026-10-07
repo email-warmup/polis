@@ -12,11 +12,8 @@ import {
 } from '../typings';
 import * as encrypter from './encrypter';
 import mem from './mem';
-import mongo from './mongo';
-import redis from './redis';
 import sql from './sql/sql';
 import store from './store';
-import dynamodb from './dynamoDb';
 import * as metrics from '../opentelemetry/metrics';
 
 import { JacksonStore } from './sql/entity/JacksonStore';
@@ -184,8 +181,12 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
   }
 
   switch (dbOpts.engine) {
-    case 'redis':
+    // core-warmup: драйверы redis/mongodb/dynamodb — опциональные peer-зависимости,
+    // загружаются только для своего движка (в Core Warmup используется только Postgres)
+    case 'redis': {
+      const { default: redis } = await import('./redis');
       return new DB(await redis.new(options), encryptionKey, options.logger);
+    }
     case 'sql':
       switch (dbOpts.type) {
         case 'mssql':
@@ -240,12 +241,16 @@ const _new = async (options: { db: DatabaseOption | DatabaseDriverOption; logger
         encryptionKey,
         options.logger
       );
-    case 'mongo':
+    case 'mongo': {
+      const { default: mongo } = await import('./mongo');
       return new DB(await mongo.new(options), encryptionKey, options.logger);
+    }
     case 'mem':
       return new DB(await mem.new(options), encryptionKey, options.logger);
-    case 'dynamodb':
+    case 'dynamodb': {
+      const { default: dynamodb } = await import('./dynamoDb');
       return new DB(await dynamodb.new(options), encryptionKey, options.logger);
+    }
     default:
       throw new Error('unsupported db engine: ' + dbOpts.engine);
   }
