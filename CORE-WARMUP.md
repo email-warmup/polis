@@ -28,4 +28,4 @@ npm pkg set version=26.2.0-cw.N
 gh release create v26.2.0-cw.N boxyhq-saml-jackson-26.2.0-cw.N.tgz -R email-warmup/polis --target core-warmup
 ```
 
-В `core-warmup/web/package.json` зависимость указывает на tarball из GitHub Release.
+Tarball из GitHub Release кладётся в `core-warmup/vendor/` (проверьте sha256), а `web/package.json` ссылается на него через `file:../vendor/...`.
